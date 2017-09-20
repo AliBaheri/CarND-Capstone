@@ -49,5 +49,6 @@ class Controller(object):
 			brake = -velocity_controller
 		
 		steering = self.yaw_controller.get_steering(target_velocity_linear_x, target_velocity_angular_z, current_velocity_linear_x)
+		steering = math.degrees(steering)
 
 		return throttle, brake, steering
