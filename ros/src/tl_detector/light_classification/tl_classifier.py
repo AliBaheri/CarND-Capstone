@@ -32,6 +32,7 @@ class TLClassifier(object):
         # If the frozen model does not exist trying creating it from file chunks
         if not os.path.exists(MODEL_NAME + '/frozen_inference_graph.pb'):
             #joinfiles(MODEL_NAME + '/chunks', MODEL_NAME + '/frozen_inference_graph.pb')
+            print('frozen inference graph not found - building from chunks')
             output = open(MODEL_NAME + '/frozen_inference_graph.pb', 'wb')
             chunks = os.listdir(MODEL_NAME + '/chunks')
             chunks.sort()
