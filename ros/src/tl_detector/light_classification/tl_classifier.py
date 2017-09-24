@@ -32,7 +32,7 @@ class TLClassifier(object):
         # If the frozen model does not exist trying creating it from file chunks
         if not os.path.exists(MODEL_NAME + '/frozen_inference_graph.pb'):
             #joinfiles(MODEL_NAME + '/chunks', MODEL_NAME + '/frozen_inference_graph.pb')
-            print('frozen inference graph not found - building from chunks')
+            print("frozen inference graph not found - building from chunks")
             output = open(MODEL_NAME + '/frozen_inference_graph.pb', 'wb')
             chunks = os.listdir(MODEL_NAME + '/chunks')
             chunks.sort()
@@ -44,8 +44,8 @@ class TLClassifier(object):
             output.close()
 
         # Load label map
-        PATH_TO_LABELS = os.path.join(base_path, 'data', 'mscoco_label_map.pbtxt')
-        NUM_CLASSES = 90
+        PATH_TO_LABELS = os.path.join(base_path, 'data', 'label_map.pbtxt')
+        NUM_CLASSES = 14
         label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
         categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES,
                                                                     use_display_name=True)
@@ -103,84 +103,27 @@ class TLClassifier(object):
         scores = np.squeeze(scores)
         classes = np.squeeze(classes).astype(np.int32)
 
-        # Loop through the detections which are TRAFFIC LIGHTS and get the bounding box for
-        # the highest score. If above a THRESHOLD (0.1) then crop the image with this
-        # bounding box.
-        # With the cropped index perform a basic CV colour histogram to determine the maximum
-        # colour of green, orange/yellow, red.
-        best_score = 0.
-        best_score_index = 0
+        # Check the detections. If it has a good score
+        # then set the current light to the detected label. The
+        # first one is alwasy the best (they are returned sorted 
+        # in score order).
+        # Note that we have trained for 14 categories, including
+        # left/right arrows etc. Here we are only looking for 
+        # standard red, yellow and green light and ignore others.
+        for i in range(boxes.shape[0]):
+            if scores is None or scores[i] > .5:
+                classname = self.category_index[classes[i]]['name']
+                print(classname, scores[i])
 
-        for i in range(0, classes.size - 1):
-            # If TRAFFIC LIGHT (coco dataset label 10)
-            if classes[i] == 10.:
-                score = scores[i]
-                if score > best_score:
-                    best_score = score
-                    best_score_index = i
-
-        print("Best Score:", best_score, best_score_index)
-
-        if best_score > .02: #.1:
-            box = boxes[best_score_index]
-
-            im_height, im_width, im_depth = image.shape
-            ymin, xmin, ymax, xmax = box
-            (left, right, top, bottom) = (xmin * im_width, xmax * im_width, ymin * im_height, ymax * im_height)
-
-            # If detection bounding box is too small - exit with no light
-            # as the CV classification code needs a biiger image...
-            #if (right-left) < 20:
-            #    return TrafficLight.UNKNOWN
-
-            # Get rid of borders by shrinking image a little
-            left_int = np.uint16(left) + 10
-            right_int = np.uint16(right) - 5
-            top_int = np.uint16(top) + 5
-            bottom_int = np.uint16(bottom) - 5
-
-            print("Bounding Box Width", right_int - left_int)
-
-            try:
-                tf_image_cropped = image[top_int:bottom_int, left_int:right_int, :]
-                gray = cv2.cvtColor(tf_image_cropped.astype('uint8'), cv2.COLOR_BGR2GRAY)
-                gray = cv2.GaussianBlur(gray, (5, 5), 0)  # 11 is the radius (must be odd no.)
-                (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)  # maxLoc is (x, y)
-
-                # Is this a vertical or horizontal traffic light
-                gray_height, gray_width = gray.shape
-                if gray_height >= gray_width:
-                    VERTICAL_LIGHT = True
-                else:
-                    VERTICAL_LIGHT = False
-
-                # Classify the light based on position of brightest area
-                if VERTICAL_LIGHT == True:
-                    #print("Vertical oriented light")
-                    (maxLoc_width, maxLoc_height) = maxLoc
-
-                    #print("ratio", maxLoc_height, gray_height)
-
-                    #bright_spot_image = tf_image_cropped.copy()
-                    #cv2.circle(bright_spot_image, maxLoc, 10, (255, 0, 0), 2)
-                    #plt.figure(figsize=(12, 8))
-                    #plt.imshow(bright_spot_image)
-                    #plt.show()
-
-                    if float(maxLoc_height) / float(gray_height) > 0.7:
-                        self.current_light = TrafficLight.GREEN
-                    elif float(maxLoc_height) / float(gray_height) > 0.4:
-                        self.current_light = TrafficLight.YELLOW
-                    else:
-                        self.current_light = TrafficLight.RED
+                if classname == 'Green':
+                    self.current_light = TrafficLight.GREEN
+                elif classname == 'Yellow':
+                    self.current_light = TrafficLight.YELLOW
+                elif classname == 'Red':
+                    self.current_light = TrafficLight.RED
                 else:
                     self.current_light = TrafficLight.UNKNOWN
-            
-            except:
-                print("Exception occured in OpenCV routines as found bounding box is too small")
-                self.current_light = TrafficLight.UNKNOWN
 
-        else:
-            self.current_light = TrafficLight.UNKNOWN
+            break
 
         return self.current_light
