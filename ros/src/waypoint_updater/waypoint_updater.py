@@ -127,6 +127,11 @@ class WaypointUpdater(object):
         if (self.waypoints is None):
             self.waypoints = msg.waypoints
             rospy.loginfo("waypoints %s", len(self.waypoints))
+
+            # limit speed to 10 mph
+            rospy.logwarn("limiting waypoint velocity to 10 mph ")
+            for i in range(len(self.waypoints)):
+                self.waypoints[i].twist.twist.linear.x = 10./2.23693
         else:
             self.base_waypoints_sub.unregister()
 
