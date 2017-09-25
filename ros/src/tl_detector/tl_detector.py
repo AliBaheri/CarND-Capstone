@@ -267,7 +267,7 @@ class TLDetector(object):
                           light_wp, light.pose.pose.position.x, light.pose.pose.position.y, light.pose.pose.position.z)
             rospy.logdebug("Light's nearest Waypoint (%s) Details (%s)",  light_wp, self.waypoints[light_wp].pose.pose.position)
 
-            rospy.loginfo("seehere Light state near waypoint (%s) is (%s)", light_wp, light.state)
+            rospy.loginfo("GROUND TRUTH Light state near waypoint (%s) is (%s)", light_wp, light.state)
 
 
         if light:
