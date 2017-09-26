@@ -40,7 +40,7 @@ class Controller(object):
 			dt = current_time - self.prev_time
 		self.prev_time = current_time
 
-		velocity_controller = 0
+		velocity_controller = 0.05
 		if dt > 0:
 			velocity_controller = self.throttle_pid.step(diff_velocity, dt)
 		if velocity_controller > 0:
