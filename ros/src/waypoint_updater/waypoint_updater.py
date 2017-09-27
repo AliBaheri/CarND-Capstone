@@ -217,7 +217,8 @@ class WaypointUpdater(object):
     def traffic_cb(self, msg):
         # rospy.loginfo("traffic_cb %s", msg)
 
-        self.redlight_waypoint = msg.data if msg.data != -1 else None
+        #self.redlight_waypoint = msg.data if msg.data != -1 else None
+        pass
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
