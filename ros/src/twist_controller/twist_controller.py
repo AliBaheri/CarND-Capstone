@@ -52,7 +52,7 @@ class Controller(object):
 			brake = 0
 		elif velocity_controller <= self.brake_deadband:
 			brake = -velocity_controller * self.vehicle_mass * self.wheel_radius
-		else 
+		else:
 			brake = 0
 			throttle = 0
 
