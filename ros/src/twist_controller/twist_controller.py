@@ -1,6 +1,6 @@
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
-MIN_SPEED_YAW_CONTROLLER = 1.0
+MIN_SPEED_YAW_CONTROLLER = ONE_MPH
 
 # Import helper classes
 from  yaw_controller import YawController
@@ -40,7 +40,7 @@ class Controller(object):
 		current_time = rospy.get_time()
 		dt = 0
 		if self.prev_time is not None:
-			dt = (current_time - self.prev_time).to_sec() # Should already be in second, just make sure it is
+			dt = (current_time - self.prev_time)
 		self.prev_time = current_time
 
 		velocity_controller = 0
