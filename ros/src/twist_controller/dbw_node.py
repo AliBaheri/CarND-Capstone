@@ -69,7 +69,9 @@ class DBWNode(object):
 
 		# Instantiate a Controller object
 		self.controller = Controller(self.prev_throttle, wheel_base = wheel_base, steer_ratio = steer_ratio,
-									min_speed = 0.0, max_lat_accel = max_lat_accel, max_steer_angle = max_steer_angle, decel_limit = decel_limit, accel_limit = accel_limit)
+									min_speed = 0.0, max_lat_accel = max_lat_accel, max_steer_angle = max_steer_angle, 
+									decel_limit = decel_limit, accel_limit = accel_limit, brake_deadband = brake_deadband, 
+									wheel_radius = wheel_radius, vehicle_mass = vehicle_mass)
 
 		# Define Subscribers 
 		rospy.Subscriber("/current_velocity", TwistStamped, self.current_velocity_cb, queue_size=1)
