@@ -1,5 +1,5 @@
 from tl_classifier import TLClassifier
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 classifier = TLClassifier()
 import cv2
