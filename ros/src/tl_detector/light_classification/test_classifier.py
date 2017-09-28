@@ -12,4 +12,3 @@ image = cv2.imread('data/test_images_real/left0000.jpg')
 result = classifier.get_classification(image)
 print('result: ', result)
 
-
