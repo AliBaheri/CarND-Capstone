@@ -113,6 +113,12 @@ class WaypointUpdater(object):
                 rospy.loginfo("decelerate to zero %s waypoints", len(final_waypoints.waypoints))
                 final_waypoints.waypoints = self.decelerate(final_waypoints.waypoints)
 
+                # pad with zero velocity waypoints
+                for i in range(next_wp+len(final_waypoints.waypoints), final_wp):
+                    wp = self.waypoints[i]
+                    wp.twist.twist.linear.x = 0.0
+                    final_waypoints.waypoints.append(wp)
+
         wps = [(wp.pose.pose.position.x,wp.pose.pose.position.y)
                for wp in final_waypoints.waypoints]
         speeds = [wp.twist.twist.linear.x for wp in final_waypoints.waypoints]
