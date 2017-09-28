@@ -14,7 +14,7 @@ from utilities import visualization_utils as vis_util
 import cv2
 
 #Testing
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 
 class TLClassifier(object):
@@ -24,8 +24,23 @@ class TLClassifier(object):
 
         # Path to frozen detection graph. This is the actual model that is used for the object detection.
         base_path = os.path.dirname(os.path.abspath(__file__))
-        MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
+        #MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
+        MODEL_NAME = 'udacity_sim_50'
         PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
+        CHUNK_SIZE = 10485760  # 10MB
+
+        # If the frozen model does not exist trying creating it from file chunks
+        if not os.path.exists(MODEL_NAME + '/frozen_inference_graph.pb'):
+            #joinfiles(MODEL_NAME + '/chunks', MODEL_NAME + '/frozen_inference_graph.pb')
+            output = open(MODEL_NAME + '/frozen_inference_graph.pb', 'wb')
+            chunks = os.listdir(MODEL_NAME + '/chunks')
+            chunks.sort()
+            for fname in chunks:
+                fpath = os.path.join(MODEL_NAME + '/chunks', fname)
+                with open(fpath, 'rb') as fileobj:
+                    for chunk in iter(lambda: fileobj.read(CHUNK_SIZE), b''):
+                        output.write(chunk)
+            output.close()
 
         # Load label map
         PATH_TO_LABELS = os.path.join(base_path, 'data', 'mscoco_label_map.pbtxt')
@@ -140,16 +155,16 @@ class TLClassifier(object):
 
                 # Classify the light based on position of brightest area
                 if VERTICAL_LIGHT == True:
-                    print("Vertical oriented light")
+                    #print("Vertical oriented light")
                     (maxLoc_width, maxLoc_height) = maxLoc
 
-                    print("ratio", maxLoc_height, gray_height)
+                    #print("ratio", maxLoc_height, gray_height)
 
-                    bright_spot_image = tf_image_cropped.copy()
-                    cv2.circle(bright_spot_image, maxLoc, 10, (255, 0, 0), 2)
-                    plt.figure(figsize=(12, 8))
-                    plt.imshow(bright_spot_image)
-                    plt.show()
+                    #bright_spot_image = tf_image_cropped.copy()
+                    #cv2.circle(bright_spot_image, maxLoc, 10, (255, 0, 0), 2)
+                    #plt.figure(figsize=(12, 8))
+                    #plt.imshow(bright_spot_image)
+                    #plt.show()
 
                     if float(maxLoc_height) / float(gray_height) > 0.7:
                         self.current_light = TrafficLight.GREEN
