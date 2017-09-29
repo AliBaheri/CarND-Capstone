@@ -17,6 +17,10 @@ class Controller(object):
 		self.throttle_pid = PID(kp=0.1, ki=0.015, kd=0.15, mn=kwargs['decel_limit'], mx=kwargs['accel_limit'])
 		self.min_speed = kwargs['min_speed']
 		self.prev_time = None
+		self.brake_deadband = kwargs['brake_deadband']
+		self.total_mass = kwargs['vehicle_mass'] + kwargs['fuel_capacity']*GAS_DENSITY
+		self.wheel_radius = kwargs['wheel_radius']
+		
 
 	def control(self, *args, **kwargs):
 		target_velocity_linear_x = args[0]
@@ -43,10 +47,18 @@ class Controller(object):
 		velocity_controller = 0
 		if dt > 0:
 			velocity_controller = self.throttle_pid.step(diff_velocity, dt)
+
 		if velocity_controller > 0:
-			throttle = velocity_controller
-		elif velocity_controller < 0:
-			brake = -velocity_controller
+            		throttle = velocity_controller
+            		brake = 0
+        	else:
+            		throttle = 0
+            		decel = -velocity_controller
+
+            		if decel < self.brake_deadband:
+                		decel= 0
+
+            		brake = decel * self.total_mass *self.wheel_radius				
 
 		steering = self.yaw_controller.get_steering(target_velocity_linear_x, target_velocity_angular_z, current_velocity_linear_x)
 

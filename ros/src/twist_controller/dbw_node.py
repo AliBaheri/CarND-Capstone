@@ -60,6 +60,8 @@ class DBWNode(object):
 		self.current_velocity = None # Commig from /current_velocity
 		self.current_pose = None # Commig from /current_pose
 		self.prev_throttle = 0
+		self.prev_steering = 0
+		self.prev_brake = 0
 		self.target_velocity = None
 
 		# Define Publishers
@@ -69,7 +71,7 @@ class DBWNode(object):
 
 		# Instantiate a Controller object
 		self.controller = Controller(self.prev_throttle, wheel_base = wheel_base, steer_ratio = steer_ratio,
-									min_speed = 0.0, max_lat_accel = max_lat_accel, max_steer_angle = max_steer_angle, decel_limit = decel_limit, accel_limit = accel_limit)
+									min_speed = 0.0, max_lat_accel = max_lat_accel, max_steer_angle = max_steer_angle, decel_limit = decel_limit, accel_limit = accel_limit,vehicle_mass = vehicle_mass,fuel_capacity = fuel_capacity,wheel_radius = wheel_radius,brake_deadband = brake_deadband)
 
 		# Define Subscribers 
 		rospy.Subscriber("/current_velocity", TwistStamped, self.current_velocity_cb, queue_size=1)
@@ -105,20 +107,26 @@ class DBWNode(object):
 		All the parameters values should be in the range [0,1] as per Udacity requirements
 		"""
 		tcmd = ThrottleCmd()
-		tcmd.enable = True
+		tcmd.enable = (abs(throttle - self.prev_throttle) > 0.05)
+		if tcmd.enable :
+			self.prev_throttle = throttle
 		tcmd.pedal_cmd_type = ThrottleCmd.CMD_PERCENT
 		tcmd.pedal_cmd = throttle
 		rospy.loginfo(throttle)
 		self.throttle_pub.publish(tcmd)
 
 		scmd = SteeringCmd()
-		scmd.enable = True
+		scmd.enable = (abs(steer - self.prev_steering) > 0.05)
+		if scmd.enable :
+			self.prev_steering = steer
 		scmd.steering_wheel_angle_cmd = steer
 		rospy.loginfo(steer)
 		self.steer_pub.publish(scmd)
 
 		bcmd = BrakeCmd()
-		bcmd.enable = True
+		bcmd.enable = (abs(brake - self.prev_brake) > 0.05)
+		if bcmd.enable :
+			self.prev_brake = brake
 		bcmd.pedal_cmd_type = BrakeCmd.CMD_TORQUE
 		bcmd.pedal_cmd = brake
 		rospy.loginfo(brake)
