@@ -238,7 +238,7 @@ class WaypointUpdater(object):
         last.twist.twist.linear.x = 0.
         for wp in waypoints[:-1][::-1]:
             dist = distance(wp.pose.pose.position, last.pose.pose.position)
-            vel = math.sqrt(2 * MAX_DECEL * dist) * 3.6
+            vel = math.sqrt(2 * MAX_DECEL * dist)
             if vel < 1.:
                 vel = 0.
             wp.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
