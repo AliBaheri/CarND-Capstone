@@ -7,6 +7,7 @@ from tf.transformations import euler_from_quaternion
 from std_msgs.msg import Int32
 
 import numpy as np
+from copy import deepcopy
 
 import math
 
@@ -25,7 +26,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 30 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 120 # Number of waypoints we will publish. You can change this number
 
 MAX_DECEL = 1.0
 
@@ -115,7 +116,7 @@ class WaypointUpdater(object):
 
                 # pad with zero velocity waypoints
                 for i in range(next_wp+len(final_waypoints.waypoints), final_wp):
-                    wp = self.waypoints[i]
+                    wp = deepcopy(self.waypoints[i])
                     wp.twist.twist.linear.x = 0.0
                     final_waypoints.waypoints.append(wp)
 
@@ -238,7 +239,7 @@ class WaypointUpdater(object):
         last.twist.twist.linear.x = 0.
         for wp in waypoints[:-1][::-1]:
             dist = distance(wp.pose.pose.position, last.pose.pose.position)
-            vel = math.sqrt(2 * MAX_DECEL * dist) * 3.6
+            vel = math.sqrt(2 * MAX_DECEL * dist)
             if vel < 1.:
                 vel = 0.
             wp.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
