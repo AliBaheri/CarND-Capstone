@@ -7,6 +7,7 @@ from tf.transformations import euler_from_quaternion
 from std_msgs.msg import Int32
 
 import numpy as np
+from copy import deepcopy
 
 import math
 
@@ -115,7 +116,7 @@ class WaypointUpdater(object):
 
                 # pad with zero velocity waypoints
                 for i in range(next_wp+len(final_waypoints.waypoints), final_wp):
-                    wp = self.waypoints[i]
+                    wp = deepcopy(self.waypoints[i])
                     wp.twist.twist.linear.x = 0.0
                     final_waypoints.waypoints.append(wp)
 
