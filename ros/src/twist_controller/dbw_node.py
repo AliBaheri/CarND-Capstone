@@ -96,7 +96,7 @@ class DBWNode(object):
 												self.dbw_enabled)
 
 				rospy.loginfo("debug - Steering = (%s)", steering)
-
+				
 				if self.dbw_enabled: 
 					self.publish(throttle, brake, steering)
 					
@@ -106,6 +106,7 @@ class DBWNode(object):
 		"""
 		All the parameters values should be in the range [0,1] as per Udacity requirements
 		"""
+		rospy.loginfo("seehere - target velocity linear x = (%s) actual throttle = (%s) brake = (%s) current velocity linear x = (%s)",self.target_velocity.linear.x,throttle,brake,self.current_velocity.linear.x)
 		if brake<=0:	
 			tcmd = ThrottleCmd()
 			tcmd.enable = (abs(throttle - self.prev_throttle) > 0.05)
