@@ -35,7 +35,7 @@ class Controller(object):
 		brake = 0.0
 
 		if not dbw_enabled:
-			self.throttle.reset()
+			self.throttle_pid.reset()
 			return 0, 0, 0
 
 		# Compute difference between target and current velocity as CTE for throttle.
@@ -55,6 +55,8 @@ class Controller(object):
 			brake = -velocity_controller
 
 		self.prev_time = current_time
+		yaw_steer = self.yaw_controller.get_steering(target_velocity_linear_x, target_velocity_angular_z, current_velocity_linear_x)
+		steering = yaw_steer
 		
 		"""
 		corrective_steer = self.steering_controller.step(target_velocity_angular_z, dt)
