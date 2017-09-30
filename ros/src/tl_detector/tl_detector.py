@@ -14,7 +14,7 @@ import yaml
 from attrdict import AttrDict
 import numpy as np
 
-STATE_COUNT_THRESHOLD = 3
+STATE_COUNT_THRESHOLD = 2
 
 class TLDetector(object):
     def __init__(self):
@@ -254,7 +254,8 @@ class TLDetector(object):
         tmp_light_wp = self.get_closest_waypoint(AttrDict({'x': light_position[0], 'y': light_position[1]}))
 
         # Check if waypoint nearest to traffic light is ahead of the car
-        if  self.waypoints[tmp_light_wp].pose.pose.position.x >= self.pose.pose.position.x :
+        if  ((self.waypoints[tmp_light_wp].pose.pose.position.x >= self.pose.pose.position.x) or
+                     abs(self.waypoints[tmp_light_wp].pose.pose.position.x - self.pose.pose.position.x) < 50) :
             light_wp = tmp_light_wp
             light = self.lights[nearest_light_car_index]
 
@@ -264,7 +265,7 @@ class TLDetector(object):
                           light_wp, light.pose.pose.position.x, light.pose.pose.position.y, light.pose.pose.position.z)
             rospy.logdebug("Light's nearest Waypoint (%s) Details (%s)",  light_wp, self.waypoints[light_wp].pose.pose.position)
 
-            rospy.loginfo("Light state near waypoint (%s) is (%s)", light_wp, light.state)
+            rospy.loginfo("seehere Light state near waypoint (%s) is (%s)", light_wp, light.state)
 
 
         if light:

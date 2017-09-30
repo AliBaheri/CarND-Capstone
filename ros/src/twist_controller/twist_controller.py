@@ -15,7 +15,6 @@ class Controller(object):
 		self.yaw_controller = YawController(kwargs['wheel_base'], kwargs['steer_ratio'],
 											kwargs['min_speed'] + ONE_MPH, kwargs['max_lat_accel'],
 											kwargs['max_steer_angle'])
-		
 		self.min_speed = kwargs['min_speed']
 		self.prev_time = rospy.get_time()
 		self.brake_deadband = kwargs['brake_deadband']
@@ -26,7 +25,6 @@ class Controller(object):
 		self.throttle_pid = PID(0.5, 0.02, 0.2,self.decel_limit,self.accel_limit)
 		#self.steering_controller = PID(5, 0.05, 1, -0.5, 0.5)
 		
-
 	def control(self, *args, **kwargs):
 		target_velocity_linear_x = args[0]
 		target_velocity_angular_z = args[1]
@@ -45,13 +43,14 @@ class Controller(object):
 
 		current_time = rospy.get_time()
 		dt = current_time - self.prev_time
+
 		self.prev_time = current_time
 
 		velocity_controller = 0
 
 		if dt > 0:
 			velocity_controller = self.throttle_pid.step(diff_velocity, dt)
-		if abs(target_velocity_linear_x)<0.01 and abs(current_velocity_linear_x) < 0.3:
+		if abs(target_velocity_linear_x)<0.01 and abs(current_velocity_linear_x) < 0.4:
 		        velocity_controller = self.decel_limit
 		if velocity_controller > 0:
             		throttle = velocity_controller
@@ -65,6 +64,7 @@ class Controller(object):
 
             		brake = decel * self.total_mass *self.wheel_radius				
 		#corrective_steer = self.steering_controller.step(target_velocity_angular_z, dt)
+
 		yaw_steer = self.yaw_controller.get_steering(target_velocity_linear_x, target_velocity_angular_z, current_velocity_linear_x)
 		steering = yaw_steer #+ corrective_steer
 		#accel_time = 0.5
@@ -77,7 +77,6 @@ class Controller(object):
 	        #torque = self.total_mass * acceleration * self.wheel_radius
         	#throttle, brake = 0, 0
         	#if torque > 0:
-        	    
         	#    throttle, brake = min(1.0, torque/10.0), 0.0
 	        #else:
 	        #    throttle, brake = 0.0, min(abs(torque),MAX_TORQUE)

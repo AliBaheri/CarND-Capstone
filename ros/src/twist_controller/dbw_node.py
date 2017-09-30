@@ -96,7 +96,7 @@ class DBWNode(object):
 												self.dbw_enabled)
 
 				rospy.loginfo("debug - Steering = (%s)", steering)
-
+				
 				if self.dbw_enabled: 
 					self.publish(throttle, brake, steering)
 					
