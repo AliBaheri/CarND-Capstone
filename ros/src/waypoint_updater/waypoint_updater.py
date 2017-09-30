@@ -34,7 +34,7 @@ class WaypointUpdater(object):
     def __init__(self):
         rospy.init_node('waypoint_updater')
 
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
+        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size=1)
         self.base_waypoints_sub = rospy.Subscriber('/base_waypoints',
                                                    Lane, self.waypoints_cb)
 
@@ -222,7 +222,7 @@ class WaypointUpdater(object):
         return closest_wp
 
     def traffic_cb(self, msg):
-        # rospy.loginfo("traffic_cb %s", msg)
+        rospy.loginfo("seehere traffic_cb received %s", msg.data)
 
         self.redlight_waypoint = msg.data if msg.data != -1 else None
 
