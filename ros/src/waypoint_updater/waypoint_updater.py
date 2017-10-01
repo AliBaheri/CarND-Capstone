@@ -100,7 +100,7 @@ class WaypointUpdater(object):
         if final_wp > len(self.waypoints)-1:
             final_wp = len(self.waypoints)-1
         for i in range(next_wp, final_wp):
-            final_waypoints.waypoints.append(self.waypoints[i])
+            final_waypoints.waypoints.append(deepcopy(self.waypoints[i]))
 
             # only add waypoints up till the traffic light
             if self.redlight_waypoint is not None:
