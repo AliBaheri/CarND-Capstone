@@ -46,9 +46,9 @@ class Controller(object):
 		dt = current_time - self.prev_time
 		self.prev_time = current_time
 			
-		corrective_steer = self.steering_controller.step(target_velocity_angular_z, dt)
+		#corrective_steer = self.steering_controller.step(target_velocity_angular_z, dt)
 		yaw_steer = self.yaw_controller.get_steering(target_velocity_linear_x, target_velocity_angular_z, current_velocity_linear_x)
-		steering = corrective_steer + yaw_steer
+		steering = yaw_steer
 		accel_time = 0.5
         	acceleration = diff_velocity / accel_time
 	        if acceleration > 0:
