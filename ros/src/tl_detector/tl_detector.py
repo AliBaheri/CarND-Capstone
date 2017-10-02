@@ -231,7 +231,7 @@ class TLDetector(object):
 
         """
 
-        if (self.waypoints is None):
+        if (self.waypoints is None or self.pose is None):
             rospy.logwarn("Not processing traffic lights as waypoints are not initialized")
             return -1, TrafficLight.UNKNOWN
 
@@ -267,7 +267,7 @@ class TLDetector(object):
                           light_wp, light.pose.pose.position.x, light.pose.pose.position.y, light.pose.pose.position.z)
             rospy.logdebug("Light's nearest Waypoint (%s) Details (%s)",  light_wp, self.waypoints[light_wp].pose.pose.position)
 
-            rospy.loginfo("seehere Light state near waypoint (%s) is (%s)", light_wp, light.state)
+            rospy.loginfo("GROUND TRUTH Light state near waypoint (%s) is (%s)", light_wp, light.state)
 
 
         if light:
