@@ -4,7 +4,7 @@
 | --- | --- |
 | <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/p/5/005/082/28d/2769249.jpg" width="100"> | [Nick Hortovanyi](https://www.linkedin.com/in/hortovanyi/) |
 | <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAvqAAAAJGM2ZTlmZmIzLTVmODMtNGIzNy1hODhkLTM5NzgxODY0Y2VkOQ.jpg" width="100"> | [Anupriya Chhabra](https://www.linkedin.com/in/anupriya-chhabra/) |
-|  | [Yogesh Mathews](https://www.linkedin.com/in/yogesh-mathews-543493a6)|
+| <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/AAIA_wDGAAAAAQAAAAAAAA3VAAAAJGVhZjc3ZWI2LTk5YWUtNDBmMy1iOTAzLTE1NTNlNGEyNDg1Zg.jpg" width="100"> | [Yogesh Mathews](https://www.linkedin.com/in/yogesh-mathews-543493a6)|
 | <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAxSAAAAJGJmYmM0NjAyLWJkYmItNGMyOC1hYzU2LTRlNTYyNjc0NDJkNg.jpg" width="100"> | [Celien Nanson](https://www.linkedin.com/in/celien-nanson/) |
 | <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/p/3/005/00f/317/2da6863.jpg" width="100"> | [Jason Scott](https://www.linkedin.com/in/jason-scott-44899a10/) |
 
