@@ -2,8 +2,8 @@
 
 | Photo | Name |
 | --- | --- |
-| <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/p/5/005/082/28d/2769249.jpg" width="50"> | [Nick Hortovanyi](https://www.linkedin.com/in/hortovanyi/) |
-| <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAvqAAAAJGM2ZTlmZmIzLTVmODMtNGIzNy1hODhkLTM5NzgxODY0Y2VkOQ.jpg" width="50"> | [Anupriya Chhabra](https://www.linkedin.com/in/anupriya-chhabra/) |
+| <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/p/5/005/082/28d/2769249.jpg" width="100"> | [Nick Hortovanyi](https://www.linkedin.com/in/hortovanyi/) |
+| <img src="https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAvqAAAAJGM2ZTlmZmIzLTVmODMtNGIzNy1hODhkLTM5NzgxODY0Y2VkOQ.jpg" width="100"> | [Anupriya Chhabra](https://www.linkedin.com/in/anupriya-chhabra/) |
 |  |  |
 |  |  |
 |  |  |
