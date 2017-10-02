@@ -31,16 +31,19 @@ class TLClassifier(object):
         MODEL_NAME = 'udacity_sim_50'
         PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
         CHUNK_SIZE = 10485760  # 10MB
+        PATH_TO_CHUNKS = os.path.join(base_path, MODEL_NAME, 'chunks')
+
+        print('checkpoint', PATH_TO_CKPT)
+        print('chunks', PATH_TO_CHUNKS)
 
         # If the frozen model does not exist trying creating it from file chunks
-        if not os.path.exists(MODEL_NAME + '/frozen_inference_graph.pb'):
-            #joinfiles(MODEL_NAME + '/chunks', MODEL_NAME + '/frozen_inference_graph.pb')
+        if not os.path.exists(PATH_TO_CKPT):  #(MODEL_NAME + '/frozen_inference_graph.pb'):
             print("frozen inference graph not found - building from chunks")
-            output = open(MODEL_NAME + '/frozen_inference_graph.pb', 'wb')
-            chunks = os.listdir(MODEL_NAME + '/chunks')
+            output = open(PATH_TO_CKPT, 'wb')
+            chunks = os.listdir(PATH_TO_CHUNKS)
             chunks.sort()
             for fname in chunks:
-                fpath = os.path.join(MODEL_NAME + '/chunks', fname)
+                fpath = os.path.join(PATH_TO_CHUNKS, fname)
                 with open(fpath, 'rb') as fileobj:
                     for chunk in iter(lambda: fileobj.read(CHUNK_SIZE), b''):
                         output.write(chunk)
