@@ -1,7 +1,7 @@
 # Team Down Under (plus helpers)
 
 | Photo | Name |
-|:--|:--|:--|
+| --- | --- |
 | ![Nick Hortovanyi](https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/p/5/005/082/28d/2769249.jpg) | [Nick Hortovanyi](https://www.linkedin.com/in/hortovanyi/) |
 | ![Anupriya Chhabra](https://media-exp1.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAvqAAAAJGM2ZTlmZmIzLTVmODMtNGIzNy1hODhkLTM5NzgxODY0Y2VkOQ.jpg) | [Anupriya Chhabra](https://www.linkedin.com/in/anupriya-chhabra/) |
 |  |  |
