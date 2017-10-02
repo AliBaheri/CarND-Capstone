@@ -10,4 +10,3 @@ ros/src/tl_detector/tl.png
 
 .DS_Store
 .vscode/
-**/udacity_sim_50/frozen_inference_graph.pb
