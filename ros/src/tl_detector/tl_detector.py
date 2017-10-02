@@ -25,6 +25,8 @@ class TLDetector(object):
         self.camera_image = None
         self.lights = []
         self.position_array = []
+        self.site = rospy.get_param('~is_site')
+        rospy.loginfo("TL Detector launched in site mode : (%s)", self.site)
 
         sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size= STATE_COUNT_THRESHOLD)
         sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb, queue_size= STATE_COUNT_THRESHOLD)
@@ -45,7 +47,7 @@ class TLDetector(object):
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size= STATE_COUNT_THRESHOLD)
 
         self.bridge = CvBridge()
-        self.light_classifier = TLClassifier()
+        self.light_classifier = TLClassifier(self.site)
         self.listener = tf.TransformListener()
 
         self.state = TrafficLight.UNKNOWN
