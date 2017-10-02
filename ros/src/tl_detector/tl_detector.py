@@ -229,7 +229,7 @@ class TLDetector(object):
 
         """
 
-        if (self.waypoints is None):
+        if (self.waypoints is None or self.pose is None):
             rospy.logwarn("Not processing traffic lights as waypoints are not initialized")
             return -1, TrafficLight.UNKNOWN
 
