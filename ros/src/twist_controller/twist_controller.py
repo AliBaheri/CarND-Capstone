@@ -1,6 +1,8 @@
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
-MAX_TORQUE= 20000
+MAX_BRAKE_TORQUE= 20000
+MAX_ACCEL_TORQUE= 100.0
+MAX_ACCELTORQUE_PERCENTAGE = 1.0
 
 # Import helper classes
 from  yaw_controller import YawController
@@ -25,7 +27,6 @@ class Controller(object):
 		self.decel_limit = kwargs['decel_limit']
 		
 		
-
 	def control(self, *args, **kwargs):
 		target_velocity_linear_x = args[0]
 		target_velocity_angular_z = args[1]
@@ -36,31 +37,15 @@ class Controller(object):
 		brake = 0.0
 
 		if not dbw_enabled:
-			self.throttle.reset()
+			self.steering_controller.reset()
 			return 0, 0, 0
 
-		# Compute difference between target and current velocity as CTE for throttle.
 		diff_velocity = target_velocity_linear_x - current_velocity_linear_x
 
 		current_time = rospy.get_time()
 		dt = current_time - self.prev_time
 		self.prev_time = current_time
-
-		#velocity_controller = 0
-		#if dt > 0:
-		#	velocity_controller = self.throttle_pid.step(diff_velocity, dt)
-
-		#if velocity_controller > 0:
-            	#	throttle = velocity_controller
-            	#	brake = 0
-        	#else:
-            	#	throttle = 0
-            	#	decel = -velocity_controller
-
-            	#	if decel < self.brake_deadband:
-                #		decel= 0
-
-            	#	brake = decel * self.total_mass *self.wheel_radius				
+			
 		corrective_steer = self.steering_controller.step(target_velocity_angular_z, dt)
 		yaw_steer = self.yaw_controller.get_steering(target_velocity_linear_x, target_velocity_angular_z, current_velocity_linear_x)
 		steering = corrective_steer + yaw_steer
@@ -75,9 +60,9 @@ class Controller(object):
         	throttle, brake = 0, 0
         	if torque > 0:
         	    
-        	    throttle, brake = min(1.0, torque/10.0), 0.0
+        	    throttle, brake = min(MAX_ACCELTORQUE_PERCENTAGE, torque/MAX_ACCEL_TORQUE), 0.0
 	        else:
-	            throttle, brake = 0.0, min(abs(torque),MAX_TORQUE)
+	            throttle, brake = 0.0, min(abs(torque),MAX_BRAKE_TORQUE)
 
 		
 		return throttle, brake, steering	
