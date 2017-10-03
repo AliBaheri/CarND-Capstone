@@ -28,29 +28,29 @@ class TLClassifier(object):
         # Path to frozen detection graph. This is the actual model that is used for the object detection.
         base_path = os.path.dirname(os.path.abspath(__file__))
         #MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
-        MODEL_NAME = 'udacity_sim_50'
+        MODEL_NAME = 'ssd_mobilenet_sim'
         PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
-        CHUNK_SIZE = 10485760  # 10MB
-        PATH_TO_CHUNKS = os.path.join(base_path, MODEL_NAME, 'chunks')
+        #CHUNK_SIZE = 10485760  # 10MB
+        #PATH_TO_CHUNKS = os.path.join(base_path, MODEL_NAME, 'chunks')
 
-        print('checkpoint', PATH_TO_CKPT)
-        print('chunks', PATH_TO_CHUNKS)
+        #print('checkpoint', PATH_TO_CKPT)
+        #print('chunks', PATH_TO_CHUNKS)
 
         # If the frozen model does not exist trying creating it from file chunks
-        if not os.path.exists(PATH_TO_CKPT):  #(MODEL_NAME + '/frozen_inference_graph.pb'):
-            print("frozen inference graph not found - building from chunks")
-            output = open(PATH_TO_CKPT, 'wb')
-            chunks = os.listdir(PATH_TO_CHUNKS)
-            chunks.sort()
-            for fname in chunks:
-                fpath = os.path.join(PATH_TO_CHUNKS, fname)
-                with open(fpath, 'rb') as fileobj:
-                    for chunk in iter(lambda: fileobj.read(CHUNK_SIZE), b''):
-                        output.write(chunk)
-            output.close()
+        #if not os.path.exists(PATH_TO_CKPT):  #(MODEL_NAME + '/frozen_inference_graph.pb'):
+        #    print("frozen inference graph not found - building from chunks")
+        #    output = open(PATH_TO_CKPT, 'wb')
+        #    chunks = os.listdir(PATH_TO_CHUNKS)
+        #    chunks.sort()
+        #    for fname in chunks:
+        #        fpath = os.path.join(PATH_TO_CHUNKS, fname)
+        #        with open(fpath, 'rb') as fileobj:
+        #            for chunk in iter(lambda: fileobj.read(CHUNK_SIZE), b''):
+        #                output.write(chunk)
+        #    output.close()
 
         # Load label map
-        PATH_TO_LABELS = os.path.join(base_path, 'data', 'label_map.pbtxt')
+        PATH_TO_LABELS = os.path.join(base_path, 'data', 'traffic_lights_label_map.pbtxt')
         NUM_CLASSES = 14
         label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
         categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES,
