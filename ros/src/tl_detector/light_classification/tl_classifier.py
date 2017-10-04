@@ -11,7 +11,7 @@ from io import StringIO
 from utilities import label_map_util
 from utilities import visualization_utils as vis_util
 
-import cv2
+#import cv2
 
 #Testing
 #from matplotlib import pyplot as plt
@@ -19,17 +19,39 @@ import cv2
 
 class TLClassifier(object):
     def __init__(self, *args):
+
+        print("Classifier launched in site mode : ", args[0])
+
         self.current_light = TrafficLight.RED
         cwd = os.path.dirname(os.path.realpath(__file__))
 
         # Path to frozen detection graph. This is the actual model that is used for the object detection.
         base_path = os.path.dirname(os.path.abspath(__file__))
-        MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
+        #MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
+        MODEL_NAME = 'ssd_mobilenet_sim'
         PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
+        #CHUNK_SIZE = 10485760  # 10MB
+        #PATH_TO_CHUNKS = os.path.join(base_path, MODEL_NAME, 'chunks')
+
+        #print('checkpoint', PATH_TO_CKPT)
+        #print('chunks', PATH_TO_CHUNKS)
+
+        # If the frozen model does not exist trying creating it from file chunks
+        #if not os.path.exists(PATH_TO_CKPT):  #(MODEL_NAME + '/frozen_inference_graph.pb'):
+        #    print("frozen inference graph not found - building from chunks")
+        #    output = open(PATH_TO_CKPT, 'wb')
+        #    chunks = os.listdir(PATH_TO_CHUNKS)
+        #    chunks.sort()
+        #    for fname in chunks:
+        #        fpath = os.path.join(PATH_TO_CHUNKS, fname)
+        #        with open(fpath, 'rb') as fileobj:
+        #            for chunk in iter(lambda: fileobj.read(CHUNK_SIZE), b''):
+        #                output.write(chunk)
+        #    output.close()
 
         # Load label map
-        PATH_TO_LABELS = os.path.join(base_path, 'data', 'mscoco_label_map.pbtxt')
-        NUM_CLASSES = 90
+        PATH_TO_LABELS = os.path.join(base_path, 'data', 'traffic_lights_label_map.pbtxt')
+        NUM_CLASSES = 14
         label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
         categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES,
                                                                     use_display_name=True)
@@ -65,10 +87,13 @@ class TLClassifier(object):
 
     def get_classification(self, image):
         """Determines the color of the traffic light in the image
+
         Args:
             image (cv::Mat): image containing the traffic light
+
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
+
         """
 
         image_np_expanded = np.expand_dims(image, axis=0)
@@ -84,73 +109,27 @@ class TLClassifier(object):
         scores = np.squeeze(scores)
         classes = np.squeeze(classes).astype(np.int32)
 
-        # Loop through the detections which are TRAFFIC LIGHTS and get the bounding box for
-        # the highest score. If above a THRESHOLD (0.1) then crop the image with this
-        # bounding box.
-        # With the cropped index perform a basic CV colour histogram to determine the maximum
-        # colour of green, orange/yellow, red.
-        best_score = 0.
-        best_score_index = 0
+        # Check the detections. If it has a good score
+        # then set the current light to the detected label. The
+        # first one is alwasy the best (they are returned sorted 
+        # in score order).
+        # Note that we have trained for 14 categories, including
+        # left/right arrows etc. Here we are only looking for 
+        # standard red, yellow and green light and ignore others.
+        for i in range(boxes.shape[0]):
+            if scores is None or scores[i] > .05:
+                classname = self.category_index[classes[i]]['name']
+                print(classname, scores[i])
 
-        for i in range(0, classes.size - 1):
-            # If TRAFFIC LIGHT (coco dataset label 10)
-            if classes[i] == 10.:
-                score = scores[i]
-                if score > best_score:
-                    best_score = score
-                    best_score_index = i
-
-        print("Best Score:", best_score, best_score_index)
-
-        if best_score > .1:
-            box = boxes[best_score_index]
-
-            im_height, im_width, im_depth = image.shape
-            ymin, xmin, ymax, xmax = box
-            (left, right, top, bottom) = (xmin * im_width, xmax * im_width, ymin * im_height, ymax * im_height)
-
-            # If detection bounding box is too small - exit with no light
-            # as the CV classification code needs a biiger image...
-            #if (right-left) < 20:
-            #    return TrafficLight.UNKNOWN
-
-            # Get rid of borders by shrinking image a little
-            left_int = np.uint16(left) + 10
-            right_int = np.uint16(right) - 5
-            top_int = np.uint16(top) + 5
-            bottom_int = np.uint16(bottom) - 5
-
-            try:
-                tf_image_cropped = image[top_int:bottom_int, left_int:right_int, :]
-                gray = cv2.cvtColor(tf_image_cropped.astype('uint8'), cv2.COLOR_BGR2GRAY)
-                gray = cv2.GaussianBlur(gray, (11, 11), 0)  # 11 is the radius (must be odd no.)
-                (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)  # maxLoc is (x, y)
-
-                # Is this a vertical or horizontal traffic light
-                gray_height, gray_width = gray.shape
-                if gray_height >= gray_width:
-                    VERTICAL_LIGHT = True
-                else:
-                    VERTICAL_LIGHT = False
-
-                # Classify the light based on position of brightest area
-                if VERTICAL_LIGHT == True:
-                    (maxLoc_width, maxLoc_height) = maxLoc
-
-                    if float(maxLoc_height) / float(gray_height) > 0.7:
-                        self.current_light = TrafficLight.GREEN
-                    elif float(maxLoc_height) / float(gray_height) > 0.4:
-                        self.current_light = TrafficLight.YELLOW
-                    else:
-                        self.current_light = TrafficLight.RED
+                if classname == 'Green':
+                    self.current_light = TrafficLight.GREEN
+                elif classname == 'Yellow':
+                    self.current_light = TrafficLight.YELLOW
+                elif classname == 'Red':
+                    self.current_light = TrafficLight.RED
                 else:
                     self.current_light = TrafficLight.UNKNOWN
-            
-            except:
-                print("Exception occured in OpenCV routines as found bounding box is too small")
-                self.current_light = TrafficLight.UNKNOWN
 
-        else:
-            self.current_light = TrafficLight.UNKNOWN
+            break
 
         return self.current_light
