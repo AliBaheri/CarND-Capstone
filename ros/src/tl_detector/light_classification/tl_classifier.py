@@ -22,7 +22,7 @@ class TLClassifier(object):
 
         print("Classifier launched in site mode : ", args[0])
 
-        self.current_light = TrafficLight.UNKNOWN
+        self.current_light = TrafficLight.RED
         cwd = os.path.dirname(os.path.realpath(__file__))
 
         # Path to frozen detection graph. This is the actual model that is used for the object detection.
@@ -117,7 +117,7 @@ class TLClassifier(object):
         # left/right arrows etc. Here we are only looking for 
         # standard red, yellow and green light and ignore others.
         for i in range(boxes.shape[0]):
-            if scores is None or scores[i] > .5:
+            if scores is None or scores[i] > .05:
                 classname = self.category_index[classes[i]]['name']
                 print(classname, scores[i])
 
