@@ -14,7 +14,7 @@ import yaml
 from attrdict import AttrDict
 import numpy as np
 
-STATE_COUNT_THRESHOLD = 2
+STATE_COUNT_THRESHOLD = 1
 
 class TLDetector(object):
     def __init__(self):
@@ -25,6 +25,8 @@ class TLDetector(object):
         self.camera_image = None
         self.lights = []
         self.position_array = []
+        self.site = rospy.get_param('~is_site')
+        rospy.loginfo("TL Detector launched in site mode : (%s)", self.site)
 
         sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size= STATE_COUNT_THRESHOLD)
         sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb, queue_size= STATE_COUNT_THRESHOLD)
@@ -45,7 +47,7 @@ class TLDetector(object):
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size= STATE_COUNT_THRESHOLD)
 
         self.bridge = CvBridge()
-        self.light_classifier = TLClassifier()
+        self.light_classifier = TLClassifier(self.site)
         self.listener = tf.TransformListener()
 
         self.state = TrafficLight.UNKNOWN
@@ -209,9 +211,9 @@ class TLDetector(object):
         rospy.logdebug ("image shape (%s)", np.shape(cv_image))
         #cv2.imwrite('tl.png', cv_image)
 
-        x, y = self.project_to_image_plane(light.pose.pose.position)
+        #x, y = self.project_to_image_plane(light.pose.pose.position)
 
-        #TODO use light location to zoom in on traffic light in image
+        #TODO_not required use light location to zoom in on traffic light in image
 
         #_cv2.imwrite('output_images/tlroi', cv_image) //roi image here
 
@@ -271,9 +273,11 @@ class TLDetector(object):
         if light:
             # Uncomment below line to test waypoint publishing
             # Comment out below before final submission
-            return light_wp, light.state
+            #return light_wp, light.state
 
             state = self.get_light_state(light)
+            rospy.loginfo("CLASSIFIER Light state near waypoint (%s) is (%s)", light_wp, state)
+
             return light_wp, state
 
         #self.waypoints = None
