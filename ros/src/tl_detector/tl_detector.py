@@ -14,7 +14,7 @@ import yaml
 from attrdict import AttrDict
 import numpy as np
 
-STATE_COUNT_THRESHOLD = 2
+STATE_COUNT_THRESHOLD = 1
 
 class TLDetector(object):
     def __init__(self):
