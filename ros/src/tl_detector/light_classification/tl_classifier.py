@@ -18,7 +18,7 @@ import cv2
 
 
 class TLClassifier(object):
-    def __init__(self):
+    def __init__(self, *args):
         self.current_light = TrafficLight.RED
         cwd = os.path.dirname(os.path.realpath(__file__))
 
