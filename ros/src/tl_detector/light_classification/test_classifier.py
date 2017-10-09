@@ -1,7 +1,7 @@
 from tl_classifier import TLClassifier
 from matplotlib import pyplot as plt
 
-classifier = TLClassifier(True)  #run in sim mode == True
+classifier = TLClassifier(True)  #run in sim mode == False
 import cv2
 image = cv2.imread('data/test_images_real/left0140.jpg')
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

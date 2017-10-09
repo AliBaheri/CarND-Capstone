@@ -74,6 +74,9 @@ class TLClassifier(object):
 
         print("Classifier initialisation complete!")
 
+        with tf.variable_scope('keras'):
+            
+
 
     def load_image_into_numpy_array(self, image):
         (im_width, im_height) = image.size
