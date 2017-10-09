@@ -8,8 +8,13 @@ import tensorflow as tf
 from collections import defaultdict
 from io import StringIO
 
+from PIL import Image
+
 from utilities import label_map_util
 from utilities import visualization_utils as vis_util
+
+from keras.models import load_model
+from keras.preprocessing import image
 
 
 class TLClassifier(object):
@@ -25,7 +30,7 @@ class TLClassifier(object):
             # This is a large frozen model and must be downloaded separately from this github
             # repository from: http://download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz
             # Extract with `tar -xzvf faster_rcnn_resnet101_coco_11_06_2017`
-            MODEL_NAME = 'download_faster_rcnn_resnet101_coco_11_06_2017'
+            MODEL_NAME = 'faster_rcnn_resnet101_coco_11_06_2017'
             PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
         else:
             MODEL_NAME = 'ssd_mobilenet_sim'
@@ -51,7 +56,7 @@ class TLClassifier(object):
         #    output.close()
 
         # Load label map
-        self.RUNNING_ON_CARLA:
+        if self.RUNNING_ON_CARLA:
             PATH_TO_LABELS = os.path.join(base_path, 'data', 'mscoco_label_map.pbtxt')
             NUM_CLASSES = 90
         else:
@@ -92,6 +97,11 @@ class TLClassifier(object):
         print("Classifier initialisation complete!")
 
 
+    def load_image_into_numpy_array(self, image):
+        (im_width, im_height) = image.size
+        return np.array(image.getdata()).reshape((im_height, im_width, 3)).astype(np.uint8)
+
+
     def get_classification(self, image):
         """Determines the color of the traffic light in the image
 
@@ -120,29 +130,36 @@ class TLClassifier(object):
             for i in range(boxes.shape[0]):
                 if scores is None or scores[i] > .05:
                     if classes[i] == 10:
-                    classname = category_index[classes[i]]['name']
-                    print(classname, scores[i])
-                
-                    # Extract image from best bounding box and pass through light classifier
-                    ymin, xmin, ymax, xmax = boxes[i]
-                    im_height, im_width, im_depth = image_np.shape
-                    (left, right, top, bottom) = (xmin * im_width, xmax * im_width, ymin * im_height, ymax * im_height)
-                    tf_image_cropped = image_np[int(top):int(bottom), int(left):int(right), :]
+                        classname = self.category_index[classes[i]]['name']
+                        print(classname, scores[i])
 
-                    PILImage = Image.fromarray(tf_image_cropped)
-                    resized_img = PILImage.resize((85, 256), Image.ANTIALIAS)
-                    image_np_resized = load_image_into_numpy_array(resized_img)
-                    x = np.expand_dims(image_np_resized, axis=0)
-                    x = np.vstack([x])
+                        # Extract image from best bounding box and pass through light classifier
+                        ymin, xmin, ymax, xmax = boxes[i]
+                        im_height, im_width, im_depth = image.shape
+                        (left, right, top, bottom) = (xmin * im_width, xmax * im_width, ymin * im_height, ymax * im_height)
+                        tf_image_cropped = image[int(top):int(bottom), int(left):int(right), :]
 
-                    model = load_model('tf_classifier_1.h5')
-                    model.compile(loss='categorical_crossentropy',
-                                  optimizer='adam',
-                                  metrics=['accuracy'])
-                    classes = model.predict_classes(x, batch_size=1)
-                    print(classes)
-                
-                    break
+                        PILImage = Image.fromarray(tf_image_cropped)
+                        resized_img = PILImage.resize((85, 256), Image.ANTIALIAS)
+                        image_np_resized = self.load_image_into_numpy_array(resized_img)
+                        x = np.expand_dims(image_np_resized, axis=0)
+                        x = np.vstack([x])
+
+                        model = load_model('tf_classifier_1.h5')
+                        model.compile(loss='categorical_crossentropy',
+                                      optimizer='adam',
+                                      metrics=['accuracy'])
+                        classes = model.predict_classes(x, batch_size=1)
+                        print(classes)
+
+                        if classes[0] == 0:
+                            self.current_light = TrafficLight.GREEN
+                        elif classes[0] == 2:
+                            self.current_light = TrafficLight.YELLOW
+                        else:
+                            self.current_light = TrafficLight.RED
+
+                        break
 
         else:
             # Check the detections. If it has a good score
