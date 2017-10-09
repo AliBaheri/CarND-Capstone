@@ -27,33 +27,11 @@ class TLClassifier(object):
         base_path = os.path.dirname(os.path.abspath(__file__))
 
         if self.RUNNING_ON_CARLA == True:
-            # This is a large frozen model and must be downloaded separately from this github
-            # repository from: http://download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz
-            # Extract with `tar -xzvf faster_rcnn_resnet101_coco_11_06_2017`
-            MODEL_NAME = 'faster_rcnn_resnet101_coco_11_06_2017'
+            MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
             PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
         else:
             MODEL_NAME = 'ssd_mobilenet_sim'
             PATH_TO_CKPT = os.path.join(base_path, MODEL_NAME, 'frozen_inference_graph.pb')
-
-        #CHUNK_SIZE = 10485760  # 10MB
-        #PATH_TO_CHUNKS = os.path.join(base_path, MODEL_NAME, 'chunks')
-
-        #print('checkpoint', PATH_TO_CKPT)
-        #print('chunks', PATH_TO_CHUNKS)
-
-        # If the frozen model does not exist trying creating it from file chunks
-        #if not os.path.exists(PATH_TO_CKPT):  #(MODEL_NAME + '/frozen_inference_graph.pb'):
-        #    print("frozen inference graph not found - building from chunks")
-        #    output = open(PATH_TO_CKPT, 'wb')
-        #    chunks = os.listdir(PATH_TO_CHUNKS)
-        #    chunks.sort()
-        #    for fname in chunks:
-        #        fpath = os.path.join(PATH_TO_CHUNKS, fname)
-        #        with open(fpath, 'rb') as fileobj:
-        #            for chunk in iter(lambda: fileobj.read(CHUNK_SIZE), b''):
-        #                output.write(chunk)
-        #    output.close()
 
         # Load label map
         if self.RUNNING_ON_CARLA:

@@ -10,5 +10,4 @@ ros/src/tl_detector/tl.png
 
 .DS_Store
 .vscode/
-ros/src/tl_detector/light_classification/faster_rcnn_resnet101_coco_11_06_2017
 
