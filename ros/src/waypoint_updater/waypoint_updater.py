@@ -219,6 +219,10 @@ class WaypointUpdater(object):
         if (angle > math.pi / 4):
             closest_wp += 1
 
+        # if we've reached the end then loop back to the start
+        if closest_wp > len(waypoints) - 1:
+            closest_wp = 0
+            
         return closest_wp
 
     def traffic_cb(self, msg):
