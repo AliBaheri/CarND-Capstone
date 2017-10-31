@@ -74,8 +74,13 @@ class TLClassifier(object):
 
         print("Classifier initialisation complete!")
 
-        with tf.variable_scope('keras'):
-            
+        if self.RUNNING_ON_CARLA == True:
+            with tf.variable_scope('keras'):
+                self.keras_model = load_model('tf_classifier_1.h5')
+                self.keras_model.compile(loss='categorical_crossentropy',
+                              optimizer='adam',
+                              metrics=['accuracy'])
+                print('Keras colour classifier loaded for Carla!')
 
 
     def load_image_into_numpy_array(self, image):
@@ -126,11 +131,11 @@ class TLClassifier(object):
                         x = np.expand_dims(image_np_resized, axis=0)
                         x = np.vstack([x])
 
-                        model = load_model('tf_classifier_1.h5')
-                        model.compile(loss='categorical_crossentropy',
-                                      optimizer='adam',
-                                      metrics=['accuracy'])
-                        classes = model.predict_classes(x, batch_size=1)
+                        #model = load_model('tf_classifier_1.h5')
+                        #model.compile(loss='categorical_crossentropy',
+                        #              optimizer='adam',
+                        #              metrics=['accuracy'])
+                        classes = self.keras_model.predict_classes(x, batch_size=1)
                         print(classes)
 
                         if classes[0] == 0:
